@@ -1,4 +1,12 @@
 ---
+# Source: app1/templates/prometheus/prometheus-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |-
+---
 # Source: app1/templates/prometheus/prometheus.yml.tpl
 global:
   scrape_interval: 15s
