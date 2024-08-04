@@ -1,0 +1,4 @@
+
+prometheus:
+  scrapeInterval: "15s"
+  prometheusTargets: "localhost:9090"
