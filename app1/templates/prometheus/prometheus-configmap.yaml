@@ -4,5 +4,5 @@ metadata:
   name: prometheus-config
 data:
   prometheus.yml: |-
-    {{- $prometheusTpl := .Files.Get "templates/prometheus/prometheus.yml.tpl" }}
+    {{- $prometheusTpl := .Files.Get "config/prometheus/prometheus.yml.tpl" }}
     {{- tpl $prometheusTpl . | indent 2 }}
