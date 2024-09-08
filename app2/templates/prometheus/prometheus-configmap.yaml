@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.global.namespace }}-prometheus-config
+data:
+  prometheus.yml: |
+    {{- $tpl := .Files.Get "config/prometheus/config/prometheus.yml" }}
+    {{- tpl $tpl . | indent 4 }}

@@ -1,0 +1,11 @@
+{{- range $index, $file := .Values.prometheus.rules.files }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Values.global.namespace }}-prometheus-rules-{{ $file.name }}
+data:
+  rules.yml: |
+    {{- $content := $.Files.Get (printf "config/prometheus/rules/%s" $file.path) }}
+    {{ $content | nindent 4 }}
+---
+{{- end }}

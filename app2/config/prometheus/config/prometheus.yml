@@ -1,0 +1,10 @@
+# prometheus.yml
+global:
+  scrape_interval: 15s # 每 15 秒抓取一次數據
+  evaluation_interval: 15s # 每 15 秒評估一次規則
+scrape_configs:
+# 這個配置告訴 Prometheus 去抓取自己（本地 Prometheus metrics）
+- job_name: 'prometheus'
+  scrape_interval: 5s
+  static_configs:
+  - targets: ['localhost:9090']
