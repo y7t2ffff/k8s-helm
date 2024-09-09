@@ -4,6 +4,26 @@
 global:
   resolve_timeout: 5m # 解析告警超时时间
 
+time_intervals:
+- name: workdays
+  time_intervals:
+  - weekdays: ['monday:friday']
+    times:
+    - start_time: '09:00'
+      end_time: '18:00'
+
+
+# 告警分组配置
+route:
+  receiver: 'workhours-receiver'
+  group_by: ['alertname']
+  routes:
+  - matchers:
+    - alertname = "YourAlertName"
+    receiver: 'workhours-receiver'
+    active_time_intervals:
+    - workdays
+
 # 通知接收器
 receivers:
 - name: 'email-alerts'
@@ -22,24 +42,6 @@ receivers:
     api_url: 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'
     send_resolved: true
 
-# 告警分组配置
-route:
-  receiver: 'email-alerts'
-  group_by: ['alertname', 'priority']
-  group_wait: 30s # 在分组之前等待的时间
-  group_interval: 5m # 分组后等待的时间
-  repeat_interval: 12h # 重复告警的间隔
-
-# 抑制配置
-inhibit_rules:
-- source_match:
-    severity: 'critical'
-  target_match:
-    severity: 'warning'
-  equal: ['alertname', 'namespace']
-
-# 其他全局配置
-receivers:
 - name: 'default-receiver'
   email_configs:
   - to: 'default@example.com'
