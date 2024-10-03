@@ -1,0 +1,11 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080   # 服务的 NodePort 端口
+        hostPort: 8080         # 暴露到本地主机的端口
+        protocol: TCP
+      - containerPort: 30006   # MariaDB 服务的 NodePort 端口
+        hostPort: 3306         # 暴露到本地主机的端口
+        protocol: TCP

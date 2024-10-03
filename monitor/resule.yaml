@@ -1,0 +1,113 @@
+---
+# Source: monitor/templates/meriadb/service-local.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-mariadb-local
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+      targetPort: 3306
+      nodePort: 30006  # 可以指定一个端口，也可以让系统分配
+  selector:
+    app: monitor-mariadb
+---
+# Source: monitor/templates/meriadb/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-mariadb
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: monitor-mariadb
+---
+# Source: monitor/templates/wildfly/service-local.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-wildfly-local
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080  # 可以指定一个端口，也可以让系统分配
+  selector:
+    app: monitor-wildfly
+---
+# Source: monitor/templates/wildfly/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-wildfly
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: monitor-wildfly
+---
+# Source: monitor/templates/wildfly/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-wildfly
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitor-wildfly
+  template:
+    metadata:
+      labels:
+        app: monitor-wildfly
+    spec:
+      containers:
+        - name: wildfly
+          image: "jboss/wildfly:latest"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: release-name-mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASSWORD
+              value: my-secret-pw
+            - name: DB_NAME
+              value: mydatabase
+---
+# Source: monitor/templates/meriadb/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-mariadb
+spec:
+  serviceName: release-name-mariadb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitor-mariadb
+  template:
+    metadata:
+      labels:
+        app: monitor-mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: "mariadb:latest"
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: my-secret-pw
+            - name: MYSQL_DATABASE
+              value: mydatabase
+          ports:
+            - containerPort: 3306

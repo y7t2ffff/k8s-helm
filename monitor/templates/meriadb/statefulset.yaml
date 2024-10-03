@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "mariadb.fullname" . }}
+spec:
+  serviceName: {{ include "mariadb.fullname" . }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "mariadb.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "mariadb.name" . }}
+    spec:
+      containers:
+        - name: mariadb
+          image: "{{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}"
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ .Values.mariadb.rootPassword }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.mariadb.db }}
+          ports:
+            - containerPort: 3306

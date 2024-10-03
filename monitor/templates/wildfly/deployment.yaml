@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "wildfly.fullname" . }}
+spec:
+  replicas: {{ .Values.wildfly.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "wildfly.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "wildfly.name" . }}
+    spec:
+      containers:
+        - name: wildfly
+          image: "{{ .Values.wildfly.image.repository }}:{{ .Values.wildfly.image.tag }}"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: {{ include "mariadb.fullname" . }}
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASSWORD
+              value: {{ .Values.mariadb.rootPassword }}
+            - name: DB_NAME
+              value: {{ .Values.mariadb.db }}
